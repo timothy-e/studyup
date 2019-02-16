@@ -27,8 +27,31 @@ class StudySessionsState extends State<StudySessions>{
           )
         ]
       ),
+      body: _filterClasses(),
     );
   }
+
+  Widget _filterClasses(){
+    return Column(
+      children: <Widget>[
+        Center(
+          child: Text('Filter By Classes')
+        ),
+        Expanded(
+          child: DropdownButton<String>(
+            items: <String>['2AA4', '2XB3', '2CO3', '2FA3', '2GA3'].map((String value) {
+              return new DropdownMenuItem<String>(
+                value: value,
+                child: new Text(value),
+              );
+            }).toList(),
+            onChanged: (_) {},
+          ),
+        ),
+      ],
+    );
+  }
+
 }
 
 class StudySessions extends StatefulWidget{
