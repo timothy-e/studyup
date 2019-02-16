@@ -20,3 +20,12 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+class StudySessionsState extends State<StudySessions>{
+  
+}
+
+class StudySessions extends StatefulWidget{
+  @override
+  StudySessionsState createState() => new StudySessionsState();
+}
