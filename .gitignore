@@ -29,6 +29,7 @@
 build/
 __pycache__/
 
+lib/
 *.pyc
 
 # Android related
