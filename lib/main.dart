@@ -74,12 +74,17 @@ class StudySessionsState extends State<StudySessions> {
   }
 
   Widget _buildGroups() {
-    return new ListView.builder(
+    return new ListView.separated(
         padding: const EdgeInsets.all(16.0),
+        itemCount: studyGroups.length,
+        separatorBuilder: (context, index) => Divider(
+          color: Colors.white70,
+        ),
         itemBuilder: (BuildContext _context, int index) {
           if (index < studyGroups.length) {
             return _buildRow(studyGroups[index]);
           }
+
         });
   }
 
@@ -96,21 +101,25 @@ class StudySessionsState extends State<StudySessions> {
 
   Widget _buildRow(String studyGroup) {
     return new Container(
-        padding: EdgeInsets.all(10),
+        decoration: new BoxDecoration(
+          borderRadius: new BorderRadius.circular(16.0),
+          color: Colors.lightBlue[100],
+        ),
+        padding: EdgeInsets.all(30),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Column(
               children: [
-                Text('Class'),
-                Text('Building'),
+                Text('Title'),
+                Text('Course'),
               ],
             ),
             Column(
               children: [
-                Text('Endorsement'),
                 Text('Time'),
-                Text('Title')],
+                Text('Building'),
+                Text('Endorsement')],
             )
           ],
         ));
