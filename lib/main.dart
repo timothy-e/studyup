@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
 }
 
 class Session {
-  //final String title;
+  final String title;
   final int id;
   final String start_time;
   final String end_time;
@@ -28,7 +28,7 @@ class Session {
   final String courses;
 
   Session(
-      {/*this.title,*/ this.id,
+      {this.title, this.id,
       this.start_time,
       this.end_time,
       this.building,
@@ -36,7 +36,7 @@ class Session {
 
   factory Session.fromJson(Map<String, dynamic> json) {
     return Session(
-        //title: json['title'],
+        title: json['title'],
         id: json['id'],
         start_time: json['start_time'],
         end_time: json['end_time'],
@@ -143,6 +143,12 @@ class StudySessionsState extends State<StudySessions> {
     final String courseList =
         studyGroup.courses.replaceAll(new RegExp(r';'), ', ');
 
+    DateTime start = DateTime.parse(studyGroup.start_time);
+    DateTime end = DateTime.parse(studyGroup.end_time);
+
+    String startTime = "${start.hour.toString()}:${start.minute.toString().padLeft(2,'0')}";
+    String endTime = "${end.hour.toString()}:${end.minute.toString().padLeft(2,'0')}";
+
     return new GestureDetector(
         onTap: () {
           //print("Container clicked");
@@ -160,7 +166,7 @@ class StudySessionsState extends State<StudySessions> {
               children: [
                 Column(
                   children: [
-                    Text('Title',
+                    Text(studyGroup.title,
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     SizedBox(height: 10),
                     Text(courseList),
@@ -168,12 +174,12 @@ class StudySessionsState extends State<StudySessions> {
                 ),
                 Column(
                   children: [
-                    Text('Time'),
+                    Text(startTime + ' - ' + endTime),
                     SizedBox(height: 10),
-                    Text('Building',
+                    Text(studyGroup.building,
                         style: TextStyle(fontStyle: FontStyle.italic)),
                     SizedBox(height: 10),
-                    Text('Endorsement',
+                    Text(' ',
                         style: TextStyle(color: Colors.yellow[800]))
                   ],
                 )
