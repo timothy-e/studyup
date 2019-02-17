@@ -27,11 +27,21 @@ class StudySessionsState extends State<StudySessions> {
       appBar: AppBar(title: Text('StudyUp!'), actions: <Widget>[
         IconButton(
           icon: Icon(const IconData(0xe145, fontFamily: 'MaterialIcons')),
-          onPressed: null,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => NewStudySession()),
+            );
+          },
         ),
         IconButton(
           icon: Icon(const IconData(0xe7fd, fontFamily: 'MaterialIcons')),
-          onPressed: null,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Profile()),
+            );
+          },
         ),
         IconButton(
             icon: Icon(const IconData(0xe152, fontFamily: 'MaterialIcons')),
