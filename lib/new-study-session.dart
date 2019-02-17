@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 
 class NewStudySessionState extends State<NewStudySession> {
 
@@ -134,9 +136,15 @@ class NewStudySessionState extends State<NewStudySession> {
       }
     );
   }
+
+  void postRequest(){
+
+  }
+
 }
 
 class NewStudySession extends StatefulWidget{
   @override
   NewStudySessionState createState() => new NewStudySessionState();
 }
+

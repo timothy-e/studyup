@@ -1,6 +1,8 @@
 // File to implement the widgets and functionality for showing user profile
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 
 class ProfileState extends State<Profile> {
 
