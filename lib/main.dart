@@ -5,6 +5,7 @@ put the other info in another file
 import 'package:flutter/material.dart';
 import 'new-study-session.dart';
 import 'profile.dart';
+import 'study-session-details.dart';
 
 void main() => runApp(MyApp());
 
@@ -42,7 +43,6 @@ class StudySessionsState extends State<StudySessions> {
     'C',
     'D'
   ];
-  final TextStyle _biggerFont = const TextStyle(fontSize: 18.0);
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,8 +74,13 @@ class StudySessionsState extends State<StudySessions> {
   }
 
   Widget _buildGroups() {
-    return new ListView.builder(
-        padding: const EdgeInsets.all(16.0),
+    return new ListView.separated(
+        padding: const EdgeInsets.all(25),
+        itemCount: studyGroups.length,
+        separatorBuilder: (context, index) => Divider(
+          height: 30.0,
+          color: Colors.white70,
+        ),
         itemBuilder: (BuildContext _context, int index) {
           if (index < studyGroups.length) {
             return _buildRow(studyGroups[index]);
@@ -83,37 +88,42 @@ class StudySessionsState extends State<StudySessions> {
         });
   }
 
-  /*
   Widget _buildRow(String studyGroup) {
-    return new ListTile(
-      title: new Text(
-        studyGroup,
-        style: _biggerFont,
-      ),
-    );
-  }
-  */
-
-  Widget _buildRow(String studyGroup) {
-    return new Container(
-        padding: EdgeInsets.all(10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Column(
-              children: [
-                Text('Class'),
-                Text('Building'),
-              ],
+    return new GestureDetector(
+        onTap: (){
+          //print("Container clicked");
+          Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => SessionDetails()));
+        },
+        child: new Container(
+            decoration: new BoxDecoration(
+              borderRadius: new BorderRadius.circular(30.0),
+              color: Colors.lightBlue[100],
             ),
-            Column(
+            padding: EdgeInsets.all(28),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Text('Endorsement'),
-                Text('Time'),
-                Text('Title')],
-            )
-          ],
-        ));
+                Column(
+                  children: [
+                    Text('Title', style: TextStyle(fontWeight: FontWeight.bold)),
+                    SizedBox(height: 10),
+                    Text('Course'),
+                  ],
+                ),
+                Column(
+                  children: [
+                    Text('Time'),
+                    SizedBox(height: 10),
+                    Text('Building', style: TextStyle(fontStyle: FontStyle.italic)),
+                    SizedBox(height: 10),
+                    Text('Endorsement', style: TextStyle(color: Colors.yellow[800]))],
+                )
+              ],
+            ))
+    );
+
   }
 }
 
