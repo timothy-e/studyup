@@ -127,8 +127,6 @@ class NewStudySessionState extends State<NewStudySession> {
       }
     );
   }
-
-
 }
 
 class NewStudySession extends StatefulWidget{
