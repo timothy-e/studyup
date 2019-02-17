@@ -1,22 +1,19 @@
-import datetime
+import json
 import logging
 import os
 import socket
-from datetime import datetime
 from typing import List
 
 import sqlalchemy
-from flask import Flask, request
+from flask import Flask, abort, request
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import (Column, DateTime, ForeignKey, Integer, String, Table,
-                        inspect)
+from sqlalchemy import Column, ForeignKey, Integer, String, Table, inspect
 from sqlalchemy.orm import backref, relationship
 
 from flask_migrate import Migrate
 
 app = Flask(__name__)
 
-# [START gae_flex_mysql_app]
 # Environment variables are defined in app.yaml.
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["SQLALCHEMY_DATABASE_URI"]
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -29,6 +26,7 @@ class User(db.Model):
     __tablename__ = "user"
 
     id = Column(Integer, nullable=False, primary_key=True)
+    name = Column(String(50), nullable=False)
     courses = Column(String(50), nullable=False)
     endorsement_level = Column(Integer, nullable=False)
     studysession_id = Column(Integer, ForeignKey("studysession.id"))
@@ -36,7 +34,8 @@ class User(db.Model):
 
     # given_endorsements = relationship("User", secondary="user")
 
-    def __init__(self, courses: List[str]):
+    def __init__(self, name: str, courses: str):
+        self.name = name
         self.courses = courses
         self.endorsement_level = 0
         # self.given_endorsements = []
@@ -45,6 +44,7 @@ class User(db.Model):
         return f"User({self.id}, {self.courses}, {self.endorsement_level}"
 
 
+"""
 class Endorsements(db.Model):
     __tablename__ = 'endorsement'
     id = Column(Integer, primary_key=True)
@@ -53,6 +53,7 @@ class Endorsements(db.Model):
 
     receiver = relationship(User, backref=backref('endorsement', cascade='all, delete-orphan'))
     endorser = relationship(User, backref=backref('user', cascade='all, delete-orphan'))
+"""
 
 
 class StudySession(db.Model):
@@ -60,8 +61,12 @@ class StudySession(db.Model):
 
     id = Column(Integer, nullable=False, primary_key=True)
     courses = Column(String(50), nullable=False)
-    start_time = Column(DateTime, nullable=False)
-    end_time = Column(DateTime, nullable=False)
+    start_time = Column(String(30), nullable=False)
+    end_time = Column(String(30), nullable=False)
+    building = Column(String(50), nullable=False)
+    location = Column(String(100))
+    notes = Column(String(200))
+
     host_user = relationship(
         "User", uselist=False, back_populates="studysession"
     )
@@ -70,9 +75,12 @@ class StudySession(db.Model):
     def __init__(
         self,
         courses: str,
-        start_time: datetime,
-        end_time: datetime,
+        start_time: str,
+        end_time: str,
         host_user: User,
+        building: str,
+        location: str,
+        notes: str,
         users: List[User],
     ):
 
@@ -80,28 +88,131 @@ class StudySession(db.Model):
         self.start_time = start_time
         self.end_time = end_time
         self.host_user = host_user
+        self.building = building
+        self.location = location
+        self.notes = notes
         self.users = users
 
 
 @app.route("/")
 def index():
-    user = User(courses="CS241;CS251")
-    ss = StudySession(courses="CS241", start_time=datetime.now(), end_time=datetime.now(), host_user=user, users=[user])
+    return "hey, no one should look at this"
 
-    db.session.add(user)
+
+@app.route("/newuser/", methods=["POST"])
+def new_user():
+    name = request.args.get("name")
+    courses = request.args.get("courses")
+
+    u = User(name=name, courses=courses)
+
+    db.session.add(u)
+    db.session.commit()
+
+    return json.dumps(u.id), 200
+
+
+@app.route("/getsessions/", methods=["GET"])
+def getsessions():
+    courses = request.args.get("courses")
+
+    # do some magic query
+
+    results = StudySession.query.all()
+
+    simple_results = [
+        {
+            "id": result.id,
+            "start_time": result.start_time,
+            "end_time": result.end_time,
+            "building": result.building,
+            "courses": result.courses,
+        }
+        for result in results
+    ]
+
+    return (
+        json.dumps(simple_results),
+        200,
+        {"Content-Type": "text/plain; charset=utf-8"},
+    )
+
+
+@app.route("/sessioninfo/", methods=["GET"])
+def sessioninfo():
+    id = request.args.get("id")
+    if id is None:
+        abort(404)
+
+    ss = StudySession.query.get(id)
+    if ss is None:
+        abort(404)
+
+    user_list = [
+        {"name": u.name, "id": u.id, "is_endorsed": False} for u in ss.users
+    ]
+
+    result = {
+        "courses": ss.courses,
+        "start_time": ss.start_time,
+        "end_time": ss.end_time,
+        "users": user_list,
+        "building": ss.building,
+        "location": ss.location,
+        "notes": ss.notes,
+    }
+
+    return (
+        json.dumps(result),
+        200,
+        {"Content-Type": "text/plain; charset=utf-8"},
+    )
+
+
+@app.route("/newsession/", methods=["POST"])
+def newsession():
+    courses = request.args.get("courses")
+    start_time = request.args.get("start_time")
+    end_time = request.args.get("end_time")
+    host_user_name = request.args.get("host_user")
+    user_names = request.args.get("users")
+    building = request.args.get("building")
+    location = request.args.get("location")
+    notes = request.args.get("notes")
+
+    if courses is None:
+        return "undefined courses", 404
+    if start_time is None or end_time is None:
+        return "undefined time", 404
+    if host_user_name is None:
+        return "undefined host", 404
+    if user_names is None:
+        return "undefined users", 404
+    if building is None:
+        return "undefined building", 404
+
+    host_user = User.query.filter_by(name=host_user_name).first_or_404()
+    split_user_names = user_names.split(";")
+    print(split_user_names)
+    users = [
+        User.query.filter_by(name=uname).first() for uname in split_user_names
+    ]
+
+    ss = StudySession(
+        courses=courses,
+        start_time=start_time,
+        end_time=end_time,
+        host_user=host_user,
+        building=building,
+        location=location or "",
+        notes=notes or "",
+        users=users,
+    )
+
     db.session.add(ss)
     db.session.commit()
 
-    users = db.session.query(User).all()
-
-    results = [repr(u) for u in users]
-
-    output = "All Users:\n{}".format("\n".join(results))
-
-    return output, 200, {"Content-Type": "text/plain; charset=utf-8"}
-
-
-# [END gae_flex_mysql_app]
+    return json.dumps(ss.id), 201
 
 
 @app.errorhandler(500)
@@ -119,14 +230,7 @@ def server_error(e):
 
 
 if __name__ == "__main__":
-    print("here")
-
     db.create_all()
-    print("blah")
-    engine = db.session.get_bind()
-    iengine = inspect(engine)
-
-    print(iengine.get_table_names())
     # This is used when running locally. Gunicorn is used to run the
     # application on Google App Engine. See entrypoint in app.yaml.
     app.run(host="127.0.0.1", port=8080, debug=True)
