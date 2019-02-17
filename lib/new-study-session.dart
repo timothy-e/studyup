@@ -79,7 +79,10 @@ class NewStudySessionState extends State<NewStudySession> {
               child: FutureBuilder(
                   future: fetchPost(),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
-                return _buildClasses(snapshot);
+                    while (snapshot.hasError) {
+                      //return Text("Loading...");
+                    }
+                    return _buildClasses(snapshot);
             }
               ),
                 margin: const EdgeInsets.all(10.0),
@@ -152,6 +155,7 @@ class NewStudySessionState extends State<NewStudySession> {
                   newSession.notes = newNotes.toString();
                   newSession.title = newTitle.toString();
                   newSession.host_user = "Tim";
+
                 },
                 child: Text('Create', style: TextStyle(fontSize: 18, color: Colors.brown[100]))
             )
