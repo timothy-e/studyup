@@ -16,8 +16,8 @@ skip_files:
 - env/
 
 beta_settings:
-  cloud_sql_instances: studyup:us-central1:studyup-mysql
+  cloud_sql_instances: studyup:us-central1:studyup-sql
 
 env_variables:
     SQLALCHEMY_DATABASE_URI: >-
-      mysql+pymysql://root@/studyup-db?unix_socket=/cloudsql/studyup:us-central1:studyup-mysql
+      mysql+pymysql://root@/studyup?unix_socket=/cloudsql/studyup:us-central1:studyup-sql

@@ -2,82 +2,131 @@ import datetime
 import logging
 import os
 import socket
+from datetime import datetime
+from typing import List
 
+import sqlalchemy
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
-import sqlalchemy
+from sqlalchemy import (Column, DateTime, ForeignKey, Integer, String, Table,
+                        inspect)
+from sqlalchemy.orm import backref, relationship
 
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 
-
-def is_ipv6(addr):
-    """Checks if a given address is an IPv6 address."""
-    try:
-        socket.inet_pton(socket.AF_INET6, addr)
-        return True
-    except socket.error:
-        return False
-
-
 # [START gae_flex_mysql_app]
 # Environment variables are defined in app.yaml.
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["SQLALCHEMY_DATABASE_URI"]
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 
-class Visit(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    timestamp = db.Column(db.DateTime())
-    user_ip = db.Column(db.String(46))
+class User(db.Model):
+    __tablename__ = "user"
 
-    def __init__(self, timestamp, user_ip):
-        self.timestamp = timestamp
-        self.user_ip = user_ip
+    id = Column(Integer, nullable=False, primary_key=True)
+    courses = Column(String(50), nullable=False)
+    endorsement_level = Column(Integer, nullable=False)
+    studysession_id = Column(Integer, ForeignKey("studysession.id"))
+    studysession = relationship("StudySession", back_populates="host_user")
+
+    # given_endorsements = relationship("User", secondary="user")
+
+    def __init__(self, courses: List[str]):
+        self.courses = courses
+        self.endorsement_level = 0
+        # self.given_endorsements = []
+
+    def __repr__(self):
+        return f"User({self.id}, {self.courses}, {self.endorsement_level}"
 
 
-@app.route('/')
-def index():
-    user_ip = request.remote_addr
+class Endorsements(db.Model):
+    __tablename__ = 'endorsement'
+    id = Column(Integer, primary_key=True)
+    receiver_id = Column(Integer, ForeignKey('user.id'))
+    endorser_id = Column(Integer, ForeignKey('user.id'))
 
-    # Keep only the first two octets of the IP address.
-    if is_ipv6(user_ip):
-        user_ip = ':'.join(user_ip.split(':')[:2])
-    else:
-        user_ip = '.'.join(user_ip.split('.')[:2])
+    receiver = relationship(User, backref=backref('endorsement', cascade='all, delete-orphan'))
+    endorser = relationship(User, backref=backref('user', cascade='all, delete-orphan'))
 
-    visit = Visit(
-        user_ip=user_ip,
-        timestamp=datetime.datetime.utcnow()
+
+class StudySession(db.Model):
+    __tablename__ = "studysession"
+
+    id = Column(Integer, nullable=False, primary_key=True)
+    courses = Column(String(50), nullable=False)
+    start_time = Column(DateTime, nullable=False)
+    end_time = Column(DateTime, nullable=False)
+    host_user = relationship(
+        "User", uselist=False, back_populates="studysession"
     )
+    users = relationship("User")
 
-    db.session.add(visit)
+    def __init__(
+        self,
+        courses: str,
+        start_time: datetime,
+        end_time: datetime,
+        host_user: User,
+        users: List[User],
+    ):
+
+        self.courses = courses
+        self.start_time = start_time
+        self.end_time = end_time
+        self.host_user = host_user
+        self.users = users
+
+
+@app.route("/")
+def index():
+    user = User(courses="CS241;CS251")
+    ss = StudySession(courses="CS241", start_time=datetime.now(), end_time=datetime.now(), host_user=user, users=[user])
+
+    db.session.add(user)
+    db.session.add(ss)
     db.session.commit()
 
-    visits = Visit.query.order_by(sqlalchemy.desc(Visit.timestamp)).limit(10)
+    users = db.session.query(User).all()
 
-    results = [
-        'Time: {} Addr: {}'.format(x.timestamp, x.user_ip)
-        for x in visits]
+    results = [repr(u) for u in users]
 
-    output = 'Last 10 visits:\n{}'.format('\n'.join(results))
+    output = "All Users:\n{}".format("\n".join(results))
 
-    return output, 200, {'Content-Type': 'text/plain; charset=utf-8'}
+    return output, 200, {"Content-Type": "text/plain; charset=utf-8"}
+
+
 # [END gae_flex_mysql_app]
 
 
 @app.errorhandler(500)
 def server_error(e):
-    logging.exception('An error occurred during a request.')
-    return """
+    logging.exception("An error occurred during a request.")
+    return (
+        """
     An internal error occurred: <pre>{}</pre>
     See logs for full stacktrace.
-    """.format(e), 500
+    """.format(
+            e
+        ),
+        500,
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
+    print("here")
+
+    db.create_all()
+    print("blah")
+    engine = db.session.get_bind()
+    iengine = inspect(engine)
+
+    print(iengine.get_table_names())
     # This is used when running locally. Gunicorn is used to run the
     # application on Google App Engine. See entrypoint in app.yaml.
-    app.run(host='127.0.0.1', port=8080, debug=True)
+    app.run(host="127.0.0.1", port=8080, debug=True)
