@@ -1,4 +1,5 @@
-/* File which implements the widgets and functionality for the main page of
+
+`/* File which implements the widgets and functionality for the main page of
 study sessions. May actually change this and make this file super simple and
 put the other info in another file
 */
