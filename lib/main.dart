@@ -1,4 +1,10 @@
+/* File which implements the widgets and functionality for the main page of
+study sessions. May actually change this and make this file super simple and
+put the other info in another file
+*/
 import 'package:flutter/material.dart';
+import 'new-study-session.dart';
+import 'profile.dart';
 
 void main() => runApp(MyApp());
 
