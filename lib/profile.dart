@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:http/http.dart' as http;
 
 class ProfileState extends State<Profile> {
 
@@ -13,6 +12,7 @@ class ProfileState extends State<Profile> {
   final TextStyle _instructionFont = const TextStyle(fontSize: 14.0);
   final TextStyle _infoFont = const TextStyle(fontSize: 16.0);
   final myController = TextEditingController();
+  var url = "http://studyup.appspot.com/newsession/;";
 
   Widget build(BuildContext context) {
     return Scaffold(

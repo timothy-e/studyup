@@ -2,8 +2,18 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
+import 'dart:io';
+import 'dart:convert';
+
+var url = "http://example.com/whatsit/create";
+http.post(url, body: {"name": "doodle", "color": "blue"})
+.then((response) {
+print("Response status: ${response.statusCode}");
+print("Response body: ${response.body}");
+});
+
+http.read("http://example.com/foobar.txt").then(print);
 
 class NewStudySessionState extends State<NewStudySession> {
 
@@ -13,6 +23,9 @@ class NewStudySessionState extends State<NewStudySession> {
   final TextStyle _instructionFont = const TextStyle(fontSize: 14.0);
   final TextStyle _infoFont = const TextStyle(fontSize: 16.0);
   final Set<String> classesToInclude = new Set<String>();
+  var data = { 'courses': '2aa4', 'start_time': '8',
+  'end_time': '10', 'host_user': "Joshua",
+    'building': "thode", 'Notes': "upper%20floor"};
 
   Widget build(BuildContext context){
     return Scaffold(
@@ -147,4 +160,3 @@ class NewStudySession extends StatefulWidget{
   @override
   NewStudySessionState createState() => new NewStudySessionState();
 }
-
