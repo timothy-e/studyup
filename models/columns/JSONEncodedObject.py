@@ -9,13 +9,15 @@ class JSONEncodedObject(TypeDecorator):
 
     impl = VARCHAR
 
-    def process_bind_param(self, value, dialect):
+    @classmethod
+    def process_bind_param(value, dialect=None):
         if value is not None:
             value = json.dumps(value)
 
         return value
 
-    def process_result_value(self, value, dialect):
+    @classmethod
+    def process_result_value(value, dialect=None):
         if value is not None:
             value = json.loads(value)
 

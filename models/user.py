@@ -1,30 +1,25 @@
 from typing import List
 
-from sqlalchemy import Column, ForeignKey, Integer, Table
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, ForeignKey, Integer, Table, String
+from sqlalchemy.orm import relationship, backref
 
 from . import db
-from .columns.JSONEncodedObject import JSONEncodedObject
 
-endorsement_table = Table(
-    "association",
-    db.metadata,
-    Column("recipient_id", Integer, ForeignKey("user.id")),
-    Column("endorser_id", Integer, ForeignKey("user.id")),
+'''
+Endorsements = Table(
+    'Endorsements', db.metadata,
+    Column('')
 )
+'''
 
 
-class User(db.Model):
-    __tablename__ = "user"
+'''
+class Endorsements(db.Model):
+    __tablename__ = 'endorsement'
+    id = Column(Integer, primary_key=True)
+    receiver_id = Column(Integer, ForeignKey('user.id'))
+    endorser_id = Column(Integer, ForeignKey('user.id'))
 
-    id = Column(Integer, nullable=False, primary_key=True)
-    courses = Column(JSONEncodedObject, nullable=False)
-    endorsement_level = Column(Integer, nullable=False)
-    studysession_id = Column(Integer, ForeignKey("studysession.id"))
-
-    given_endorsements = relationship("User", secondary=endorsement_table)
-
-    def __init__(self, courses: List[str]) -> self.cls:
-        self.courses = JSONEncodedObject(courses)
-        self.endorsement_level = 0
-        self.given_endorsements = []
+    receiver = relationship(User, backref=backref('endorsement', cascade='all, delete-orphan'))
+    endorser = relationship(User, backref=backref('user', cascade='all, delete-orphan'))
+'''
