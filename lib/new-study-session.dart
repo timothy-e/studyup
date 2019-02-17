@@ -6,7 +6,57 @@ import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'dart:convert';
 
+class Session {
+
+  int id;
+  String start_time;
+  String end_time;
+  String building;
+  String courses;
+  String notes;
+
+  Session({this.id, this.start_time, this.end_time,
+    this.building, this.courses});
+
+  factory Session.fromJson(Map<String, dynamic> json) {
+    return Session(
+        id: json['id'],
+        start_time: json['start_time'],
+        end_time: json['end_time'],
+        building: json['building'],
+        courses: json['courses']
+    );
+  }
+}
+
+Future<List<Session>> fetchPost() async {
+  http.Response resp = await http.get('http://studyup.appspot.com/getsessions');
+
+  // Decoding the Response Body and putting it in an array
+  List l = json.decode(resp.body);
+  List<Session> sessions = new List();
+  l.forEach((i) {
+    sessions.add(new Session.fromJson(i));
+    return i;
+  });
+  for (int j = 0; j < sessions.length; j++) {
+    print (j);
+    print (sessions[j]);
+  }
+
+
+  return sessions;
+
+}
+
 class NewStudySessionState extends State<NewStudySession> {
+
+  Future<List<Session>> info;
+  @override
+  void initState() {
+    super.initState();
+    info = fetchPost();
+  }
 
   final List<String> listOfClasses = <String>['2AA4',
       '2GA3', '2FA3', '2XB3', '2CO3'];
@@ -14,9 +64,9 @@ class NewStudySessionState extends State<NewStudySession> {
   final TextStyle _instructionFont = const TextStyle(fontSize: 14.0);
   final TextStyle _infoFont = const TextStyle(fontSize: 16.0);
   final Set<String> classesToInclude = new Set<String>();
-  var data = { 'courses': '2aa4', 'start_time': '8',
-  'end_time': '10', 'host_user': "Joshua",
-    'building': "thode", 'Notes': "upper%20floor"};
+  final newSession = new Session();
+  final newBuilding = TextEditingController();
+  final newNotes = TextEditingController();
 
   Widget build(BuildContext context){
     return Scaffold(
@@ -82,7 +132,8 @@ class NewStudySessionState extends State<NewStudySession> {
                 decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: 'Enter the name of your building'
-                )
+                ),
+                controller: newBuilding
             ),
             TextField(
                 decoration: InputDecoration(
@@ -90,10 +141,14 @@ class NewStudySessionState extends State<NewStudySession> {
                     hintText: 'Enter in additional details of what you '
                         'are studying including location within the building, '
                         'what is being studied/worked on, etc.'
-                )
+                ),
+                controller: newNotes
             ),
             RaisedButton(
-                onPressed: null,
+                onPressed: (){
+                  newSession.building = newBuilding.toString();
+                  newSession.notes = newNotes.toString();
+                },
                 child: Text('Create', style: TextStyle(fontSize: 18, color: Colors.blue))
             )
           ],
