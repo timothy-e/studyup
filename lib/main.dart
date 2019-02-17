@@ -48,6 +48,7 @@ class StudySessionsState extends State<StudySessions> {
     print('testing 1, 2, 3');
     return Scaffold(
       appBar: AppBar(
+          backgroundColor: Colors.black,
           centerTitle: true,
           leading: IconButton(
             icon: Icon(const IconData(0xe7fd, fontFamily: 'MaterialIcons')),
@@ -102,7 +103,7 @@ class StudySessionsState extends State<StudySessions> {
         child: new Container(
             decoration: new BoxDecoration(
               borderRadius: new BorderRadius.circular(30.0),
-              color: Colors.lightBlue[100],
+              color: Colors.brown[100],
             ),
             padding: EdgeInsets.all(28),
             child: Row(
