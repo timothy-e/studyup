@@ -9,22 +9,25 @@ import 'dart:convert';
 class Session {
 
   int id;
+  String title;
   String start_time;
   String end_time;
   String building;
   String courses;
   String notes;
 
-  Session({this.id, this.start_time, this.end_time,
-    this.building, this.courses});
+  Session({this.id, this.title, this.start_time, this.end_time,
+    this.building, this.courses, this.notes});
 
   factory Session.fromJson(Map<String, dynamic> json) {
     return Session(
         id: json['id'],
+        title: json['title'],
         start_time: json['start_time'],
         end_time: json['end_time'],
         building: json['building'],
-        courses: json['courses']
+        courses: json['courses'],
+        notes: json['notes']
     );
   }
 }
@@ -67,6 +70,7 @@ class NewStudySessionState extends State<NewStudySession> {
   final newSession = new Session();
   final newBuilding = TextEditingController();
   final newNotes = TextEditingController();
+  final newTitle = TextEditingController();
 
   Widget build(BuildContext context){
     return Scaffold(
@@ -88,7 +92,8 @@ class NewStudySessionState extends State<NewStudySession> {
               decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: 'Please enter a title for your study sessions'
-              )
+              ),
+              controller: newTitle,
             ),
             Row(
               children: <Widget>[
@@ -148,6 +153,7 @@ class NewStudySessionState extends State<NewStudySession> {
                 onPressed: (){
                   newSession.building = newBuilding.toString();
                   newSession.notes = newNotes.toString();
+                  newSession.notes = newTitle.toString();
                 },
                 child: Text('Create', style: TextStyle(fontSize: 18, color: Colors.blue))
             )
