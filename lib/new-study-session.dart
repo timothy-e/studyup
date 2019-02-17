@@ -1,6 +1,7 @@
 // File to implement the functionality and widgets for creation of a new study session
 
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 class NewStudySessionState extends State<NewStudySession> {
 
@@ -23,8 +24,23 @@ class NewStudySessionState extends State<NewStudySession> {
               margin: const EdgeInsets.all(10.0),
               height: 200.0,
               child: _buildClasses()
-            )
-
+            ),
+            TextField(
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                hintText: 'Please enter a title for your study sessions'
+              )
+            ),
+            IconButton(icon: const Icon(Icons.timer),
+                onPressed: (){
+                  DatePicker.showDateTimePicker(context,
+                      showTitleActions: true,
+                      onChanged: (date) {
+                        print('change $date');
+                      }, onConfirm: (date) {
+                        print('confirm $date');
+                      }, currentTime: DateTime.now(), locale: LocaleType.en);
+                })
           ],
         )
     );
@@ -64,6 +80,7 @@ class NewStudySessionState extends State<NewStudySession> {
       }
     );
   }
+
 
 }
 
