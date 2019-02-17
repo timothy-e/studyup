@@ -127,9 +127,9 @@ class StudySessionsState extends State<StudySessions> {
   Widget _buildGroups(AsyncSnapshot snap) {
     if (snap.data != null) {
       return new ListView.separated(
-          padding: const EdgeInsets.all(25),
+          padding: const EdgeInsets.all(15),
           separatorBuilder: (context, index) => Divider(
-                height: 30.0,
+                height: 20.0,
                 color: Colors.white70,
               ),
           itemCount: snap.data.length,
@@ -167,7 +167,7 @@ class StudySessionsState extends State<StudySessions> {
               borderRadius: new BorderRadius.circular(30.0),
               color: Colors.brown[100],
             ),
-            padding: EdgeInsets.all(28),
+            padding: EdgeInsets.all(20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
