@@ -63,6 +63,7 @@ class StudySession(db.Model):
     __tablename__ = "studysession"
 
     id = Column(Integer, nullable=False, primary_key=True)
+    title = Column(String(50), nullable=False)
     courses = Column(String(50), nullable=False)
     start_time = Column(String(30), nullable=False)
     end_time = Column(String(30), nullable=False)
@@ -78,6 +79,7 @@ class StudySession(db.Model):
     def __init__(
         self,
         courses: str,
+        title: str,
         start_time: str,
         end_time: str,
         host_user: User,
@@ -87,6 +89,7 @@ class StudySession(db.Model):
     ):
 
         self.courses = courses
+        self.title = title
         self.start_time = start_time
         self.end_time = end_time
         self.host_user = host_user
@@ -146,6 +149,7 @@ def getsessions():
     simple_results = [
         {
             "id": result.id,
+            "title": result.title,
             "start_time": result.start_time,
             "end_time": result.end_time,
             "building": result.building,
@@ -177,6 +181,7 @@ def sessioninfo():
 
     result = {
         "courses": ss.courses,
+        "title": ss.title,
         "start_time": ss.start_time,
         "end_time": ss.end_time,
         "users": user_list,
@@ -195,6 +200,7 @@ def sessioninfo():
 @app.route("/newsession/", methods=["POST"])
 def newsession():
     courses = request.args.get("courses")
+    title = request.args.get("title")
     start_time = request.args.get("start_time")
     end_time = request.args.get("end_time")
     host_user_name = request.args.get("host_user")
@@ -202,6 +208,8 @@ def newsession():
     location = request.args.get("location")
     notes = request.args.get("notes")
 
+    if title is None:
+        return "undefined title", 500
     if courses is None:
         return "undefined courses", 500
     if start_time is None or end_time is None:
@@ -215,6 +223,7 @@ def newsession():
 
     ss = StudySession(
         courses=courses,
+        title=title,
         start_time=start_time,
         end_time=end_time,
         host_user=host_user,
@@ -279,6 +288,19 @@ def modify():
     new_info = {"name": user.name, "email": user.email, "courses": user.courses}
 
     return json.dumps(new_info), 200
+
+@app.route("/usercourses/", methods=["GET"])
+def user_courses():
+    name = request.args.get("name")
+
+    if name is None:
+        abort(404)
+
+    user = User.query.filter_by(name=name).first()
+
+    courses = user.courses
+
+    return courses, 200
 
 
 @app.errorhandler(500)
