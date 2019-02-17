@@ -1,0 +1,23 @@
+runtime: python
+env: flex
+entrypoint: gunicorn -b :$PORT main:app
+threadsafe: true
+
+runtime_config:
+  python_version: 3
+
+handlers:
+- url: /static
+  static_dir: static
+- url: /.*
+  script: main.app
+
+skip_files:
+- env/
+
+beta_settings:
+  cloud_sql_instances: studyup:us-central1:studyup-mysql
+
+env_variables:
+    SQLALCHEMY_DATABASE_URI: >-
+      mysql+pymysql://root@/studyup-db?unix_socket=/cloudsql/studyup:us-central1:studyup-mysql
