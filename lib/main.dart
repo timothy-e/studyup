@@ -10,7 +10,6 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 
-
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -21,25 +20,28 @@ class MyApp extends StatelessWidget {
 }
 
 class Session {
-
+  //final String title;
   final int id;
   final String start_time;
   final String end_time;
   final String building;
   final String courses;
 
-  Session({this.id, this.start_time, this.end_time,
-     this.building, this.courses});
+  Session(
+      {/*this.title,*/ this.id,
+      this.start_time,
+      this.end_time,
+      this.building,
+      this.courses});
 
   factory Session.fromJson(Map<String, dynamic> json) {
     return Session(
-      id: json['id'],
-      start_time: json['start_time'],
-      end_time: json['end_time'],
-      building: json['building'],
-      courses: json['courses']
-    );
-
+        //title: json['title'],
+        id: json['id'],
+        start_time: json['start_time'],
+        end_time: json['end_time'],
+        building: json['building'],
+        courses: json['courses']);
   }
 }
 
@@ -53,10 +55,12 @@ Future<List<Session>> fetchPost() async {
     sessions.add(new Session.fromJson(i));
     return i;
   });
+  /* Testing
   for (int j = 0; j < sessions.length; j++) {
-    print (j);
-    print (sessions[j]);
+    print(j);
+    print(sessions[j]);
   }
+  */
   return sessions;
   // Parse through sessions (individual JSON Objects)
   // Pass them into .fromJson
@@ -72,73 +76,73 @@ Future<List<Session>> fetchPost() async {
     throw Exception('Failed to load post');
   }
   */
-
 }
 
 class StudySessionsState extends State<StudySessions> {
-
-  List<Session> post;
+  Future<List<Session>> studyGroups;
   @override
-  void initState() async {
+  void initState() {
     super.initState();
-    post = await fetchPost();
+    studyGroups = fetchPost();
   }
-
-  final List<String> studyGroups = <String>[
-    'A',
-    'B',
-    'C'
-  ];
 
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          backgroundColor: Colors.black,
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(const IconData(0xe7fd, fontFamily: 'MaterialIcons')),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => Profile()),
-              );
-            },
-          ),
-          title: Text('StudyUp!'),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(const IconData(0xe145, fontFamily: 'MaterialIcons')),
+        appBar: AppBar(
+            backgroundColor: Colors.black,
+            centerTitle: true,
+            leading: IconButton(
+              icon: Icon(const IconData(0xe7fd, fontFamily: 'MaterialIcons')),
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => NewStudySession()),
+                  MaterialPageRoute(builder: (context) => Profile()),
                 );
               },
             ),
-            IconButton(
-                icon: Icon(const IconData(0xe152, fontFamily: 'MaterialIcons')),
-                onPressed: null)
-          ]),
-      body: _buildGroups(),
-    );
+            title: Text('StudyUp!'),
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(const IconData(0xe145, fontFamily: 'MaterialIcons')),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => NewStudySession()),
+                  );
+                },
+              ),
+              IconButton(
+                  icon:
+                      Icon(const IconData(0xe152, fontFamily: 'MaterialIcons')),
+                  onPressed: null)
+            ]),
+        body: Container(
+            child: FutureBuilder(
+                future: fetchPost(),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  return _buildGroups(snapshot);
+                })));
   }
 
-  Widget _buildGroups() {
+  Widget _buildGroups(AsyncSnapshot snap) {
     return new ListView.separated(
         padding: const EdgeInsets.all(25),
-        itemCount: post.length,
         separatorBuilder: (context, index) => Divider(
               height: 30.0,
               color: Colors.white70,
             ),
+        itemCount: snap.data.length,
         itemBuilder: (BuildContext _context, int index) {
-          if (index < studyGroups.length) {
-            return _buildRow(studyGroups[index]);
+          if (index < snap.data.length) {
+            return _buildRow(snap.data[index]);
           }
         });
   }
 
-  Widget _buildRow(String studyGroup) {
+  Widget _buildRow(Session studyGroup) {
+    final String courseList =
+        studyGroup.courses.replaceAll(new RegExp(r';'), ', ');
+
     return new GestureDetector(
         onTap: () {
           //print("Container clicked");
@@ -159,7 +163,7 @@ class StudySessionsState extends State<StudySessions> {
                     Text('Title',
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     SizedBox(height: 10),
-                    Text('Course'),
+                    Text(courseList),
                   ],
                 ),
                 Column(
