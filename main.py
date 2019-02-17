@@ -101,6 +101,17 @@ def index():
     return "hey, no one should look at this"
 
 
+@app.route("/getuser/", methods=["GET"])
+def get_user():
+    name = request.args.get("name")
+
+    user = User.query.filter_by(name=name).first_or_404()
+
+    new_info = {"name": user.name, "email": user.email, "courses": user.courses}
+
+    return json.dumps(new_info), 200
+
+
 @app.route("/newuser/", methods=["POST"])
 def new_user():
     name = request.args.get("name")
