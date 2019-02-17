@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 
-class NewStudySession extends StatelessWidget {
+class NewStudySessionState extends State<NewStudySession> {
 
   final List<String> listOfClasses = <String>['2AA4',
       '2GA3', '2FA3', '2XB3', '2CO3'];
@@ -51,16 +51,23 @@ class NewStudySession extends StatelessWidget {
         )
       ),
       trailing: new Icon(
-          alreadyChecked ? Icons.check_box_outline_blank : Icons.check_box,
+          alreadyChecked ? Icons.check_box : Icons.check_box_outline_blank,
       ),
       onTap: (){
-        if (alreadyChecked){
-          classesToInclude.remove(classes);
-        } else {
-          classesToInclude.add(classes);
-        }
+        setState((){
+          if (alreadyChecked){
+            classesToInclude.remove(classes);
+          } else {
+            classesToInclude.add(classes);
+          }
+        });
       }
     );
   }
 
+}
+
+class NewStudySession extends StatefulWidget{
+  @override
+  NewStudySessionState createState() => new NewStudySessionState();
 }
