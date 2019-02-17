@@ -84,7 +84,6 @@ class StudySession(db.Model):
         building: str,
         location: str,
         notes: str,
-        users: List[User],
     ):
 
         self.courses = courses
@@ -94,7 +93,7 @@ class StudySession(db.Model):
         self.building = building
         self.location = location
         self.notes = notes
-        self.users = users
+        self.users = [host_user]
 
 
 @app.route("/")
@@ -188,28 +187,20 @@ def newsession():
     start_time = request.args.get("start_time")
     end_time = request.args.get("end_time")
     host_user_name = request.args.get("host_user")
-    user_names = request.args.get("users")
     building = request.args.get("building")
     location = request.args.get("location")
     notes = request.args.get("notes")
 
     if courses is None:
-        return "undefined courses", 404
+        return "undefined courses", 500
     if start_time is None or end_time is None:
-        return "undefined time", 404
+        return "undefined time", 500
     if host_user_name is None:
-        return "undefined host", 404
-    if user_names is None:
-        return "undefined users", 404
+        return "undefined host", 500
     if building is None:
-        return "undefined building", 404
+        return "undefined building", 500
 
-    host_user = User.query.filter_by(name=host_user_name).first_or_404()
-    split_user_names = user_names.split(";")
-    print(split_user_names)
-    users = [
-        User.query.filter_by(name=uname).first() for uname in split_user_names
-    ]
+    host_user = User.query.filter_by(name=host_user_name).first()
 
     ss = StudySession(
         courses=courses,
@@ -219,7 +210,6 @@ def newsession():
         building=building,
         location=location or "",
         notes=notes or "",
-        users=users,
     )
 
     db.session.add(ss)
