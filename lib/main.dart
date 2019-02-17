@@ -77,11 +77,11 @@ Future<List<Session>> fetchPost() async {
 
 class StudySessionsState extends State<StudySessions> {
 
-  Future<List<Session>> post;
+  List<Session> post;
   @override
-  void initState() {
+  void initState() async {
     super.initState();
-    post = fetchPost();
+    post = await fetchPost();
   }
 
   final List<String> studyGroups = <String>[
@@ -126,7 +126,7 @@ class StudySessionsState extends State<StudySessions> {
   Widget _buildGroups() {
     return new ListView.separated(
         padding: const EdgeInsets.all(25),
-        itemCount: studyGroups.length,
+        itemCount: post.length,
         separatorBuilder: (context, index) => Divider(
               height: 30.0,
               color: Colors.white70,

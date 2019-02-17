@@ -6,15 +6,6 @@ import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'dart:convert';
 
-var url = "http://example.com/whatsit/create";
-http.post(url, body: {"name": "doodle", "color": "blue"})
-.then((response) {
-print("Response status: ${response.statusCode}");
-print("Response body: ${response.body}");
-});
-
-http.read("http://example.com/foobar.txt").then(print);
-
 class NewStudySessionState extends State<NewStudySession> {
 
   final List<String> listOfClasses = <String>['2AA4',
