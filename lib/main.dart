@@ -46,29 +46,32 @@ class StudySessionsState extends State<StudySessions> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: Text('StudyUp!'), actions: <Widget>[
-        IconButton(
-          icon: Icon(const IconData(0xe145, fontFamily: 'MaterialIcons')),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => NewStudySession()),
-            );
-          },
-        ),
-        IconButton(
-          icon: Icon(const IconData(0xe7fd, fontFamily: 'MaterialIcons')),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Profile()),
-            );
-          },
-        ),
-        IconButton(
-            icon: Icon(const IconData(0xe152, fontFamily: 'MaterialIcons')),
-            onPressed: null)
-      ]),
+      appBar: AppBar(
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(const IconData(0xe7fd, fontFamily: 'MaterialIcons')),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Profile()),
+              );
+            },
+          ),
+          title: Text('StudyUp!'),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(const IconData(0xe145, fontFamily: 'MaterialIcons')),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => NewStudySession()),
+                );
+              },
+            ),
+            IconButton(
+                icon: Icon(const IconData(0xe152, fontFamily: 'MaterialIcons')),
+                onPressed: null)
+          ]),
       body: _buildGroups(),
     );
   }
@@ -78,9 +81,9 @@ class StudySessionsState extends State<StudySessions> {
         padding: const EdgeInsets.all(25),
         itemCount: studyGroups.length,
         separatorBuilder: (context, index) => Divider(
-          height: 30.0,
-          color: Colors.white70,
-        ),
+              height: 30.0,
+              color: Colors.white70,
+            ),
         itemBuilder: (BuildContext _context, int index) {
           if (index < studyGroups.length) {
             return _buildRow(studyGroups[index]);
@@ -90,10 +93,9 @@ class StudySessionsState extends State<StudySessions> {
 
   Widget _buildRow(String studyGroup) {
     return new GestureDetector(
-        onTap: (){
+        onTap: () {
           //print("Container clicked");
-          Navigator.push(
-              context,
+          Navigator.push(context,
               MaterialPageRoute(builder: (context) => SessionDetails()));
         },
         child: new Container(
@@ -107,7 +109,8 @@ class StudySessionsState extends State<StudySessions> {
               children: [
                 Column(
                   children: [
-                    Text('Title', style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text('Title',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                     SizedBox(height: 10),
                     Text('Course'),
                   ],
@@ -116,14 +119,15 @@ class StudySessionsState extends State<StudySessions> {
                   children: [
                     Text('Time'),
                     SizedBox(height: 10),
-                    Text('Building', style: TextStyle(fontStyle: FontStyle.italic)),
+                    Text('Building',
+                        style: TextStyle(fontStyle: FontStyle.italic)),
                     SizedBox(height: 10),
-                    Text('Endorsement', style: TextStyle(color: Colors.yellow[800]))],
+                    Text('Endorsement',
+                        style: TextStyle(color: Colors.yellow[800]))
+                  ],
                 )
               ],
-            ))
-    );
-
+            )));
   }
 }
 
