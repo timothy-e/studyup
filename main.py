@@ -22,26 +22,39 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 
+endorsement = Table(
+    'endorsements',
+    db.metadata,
+    Column('receiver_id', Integer, ForeignKey('users.id'), primary_key=True),
+    Column('endorser_id', Integer, ForeignKey('users.id'), primary_key=True)
+)
+
 class User(db.Model):
-    __tablename__ = "user"
+    __tablename__ = "users"
 
     id = Column(Integer, nullable=False, primary_key=True)
+    email = Column(String(100), nullable=False)
     name = Column(String(50), nullable=False)
     courses = Column(String(50), nullable=False)
     endorsement_level = Column(Integer, nullable=False)
     studysession_id = Column(Integer, ForeignKey("studysession.id"))
     studysession = relationship("StudySession", back_populates="host_user")
 
-    # given_endorsements = relationship("User", secondary="user")
+    given_endorsements = relationship("User",
+        secondary=endorsement,
+        primaryjoin=(id==endorsement.c.endorser_id),
+        secondaryjoin=(id==endorsement.c.receiver_id)
+    )
 
-    def __init__(self, name: str, courses: str):
+    def __init__(self, name: str, email: str, courses: str):
         self.name = name
+        self.email = email
         self.courses = courses
         self.endorsement_level = 0
-        # self.given_endorsements = []
+        self.given_endorsements = []
 
     def __repr__(self):
-        return f"User({self.id}, {self.courses}, {self.endorsement_level}"
+        return f"User({self.id}, {self.courses}, {self.endorsement_level})"
 
 
 """
@@ -103,8 +116,9 @@ def index():
 def new_user():
     name = request.args.get("name")
     courses = request.args.get("courses")
+    email = request.args.get("email")
 
-    u = User(name=name, courses=courses)
+    u = User(name=name, email=email, courses=courses)
 
     db.session.add(u)
     db.session.commit()
@@ -214,6 +228,29 @@ def newsession():
 
     return json.dumps(ss.id), 201
 
+@app.route('/endorse/', methods=['PUT'])
+def endorse():
+    endorser = request.args.get('endorser')
+    receiver = request.args.get('receiver')
+    u_endorser = User.query.filter_by(name=endorser).first()
+    u_receiver = User.query.filter_by(name=receiver).first()
+    if u_receiver not in u_endorser.given_endorsements:
+        u_endorser.given_endorsements.append(u_receiver)
+        u_receiver.endorsement_level += 1
+        db.session.commit()
+    return json.dumps(u_endorser.id), 202
+
+@app.route('/unendorse/', methods=['PUT'])
+def unendorse():
+    unendorser = request.args.get('unendorser')
+    receiver = request.args.get('receiver')
+    u_unendorser = User.query.filter_by(name=unendorser).first()
+    u_receiver = User.query.filter_by(name=receiver).first()
+    if u_receiver not in u_unendorser.given_endorsements:
+        u_unendorser.given_endorsements.append(u_receiver)
+        u_receiver.endorsement_level -= 1
+        db.session.commit()
+    return json.dumps(u_unendorser.id), 202
 
 @app.errorhandler(500)
 def server_error(e):
