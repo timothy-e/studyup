@@ -42,7 +42,6 @@ class StudySessionsState extends State<StudySessions> {
     'C',
     'D'
   ];
-  final TextStyle _biggerFont = const TextStyle(fontSize: 18.0);
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,7 +74,7 @@ class StudySessionsState extends State<StudySessions> {
 
   Widget _buildGroups() {
     return new ListView.separated(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(18.0),
         itemCount: studyGroups.length,
         separatorBuilder: (context, index) => Divider(
           color: Colors.white70,
@@ -102,24 +101,27 @@ class StudySessionsState extends State<StudySessions> {
   Widget _buildRow(String studyGroup) {
     return new Container(
         decoration: new BoxDecoration(
-          borderRadius: new BorderRadius.circular(16.0),
+          borderRadius: new BorderRadius.circular(30.0),
           color: Colors.lightBlue[100],
         ),
-        padding: EdgeInsets.all(30),
+        padding: EdgeInsets.all(25),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Column(
               children: [
-                Text('Title'),
+                Text('Title', style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(height: 10),
                 Text('Course'),
               ],
             ),
             Column(
               children: [
                 Text('Time'),
-                Text('Building'),
-                Text('Endorsement')],
+                SizedBox(height: 10),
+                Text('Building', style: TextStyle(fontStyle: FontStyle.italic)),
+                SizedBox(height: 10),
+                Text('Endorsement', style: TextStyle(color: Colors.yellow[800]))],
             )
           ],
         ));
