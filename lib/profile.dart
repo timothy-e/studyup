@@ -17,7 +17,7 @@ class ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     return Scaffold(
         resizeToAvoidBottomPadding: false,
-        appBar: AppBar(centerTitle: true, title: Text('User Name')),
+        appBar: AppBar(centerTitle: true, title: Text('User Name'), backgroundColor: Colors.black),
         body: Column(
           children: <Widget>[
             Text('Email: joshua.guinness@gmail.com', style: _infoFont),

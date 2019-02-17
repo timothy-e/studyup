@@ -65,7 +65,6 @@ class NewStudySessionState extends State<NewStudySession> {
       '2GA3', '2FA3', '2XB3', '2CO3'];
   final TextStyle _courseFont = const TextStyle(fontSize: 18.0);
   final TextStyle _instructionFont = const TextStyle(fontSize: 14.0);
-  final TextStyle _infoFont = const TextStyle(fontSize: 16.0);
   final Set<String> classesToInclude = new Set<String>();
   final newSession = new Session();
   final newBuilding = TextEditingController();
@@ -77,7 +76,8 @@ class NewStudySessionState extends State<NewStudySession> {
         resizeToAvoidBottomPadding: false,
         appBar: AppBar(
             centerTitle: true,
-            title: Text('Create A New Study Session', style: _instructionFont)
+            title: Text('Create A New Study Session', style: _instructionFont),
+            backgroundColor: Colors.black
         ),
         body: Column(
           children: <Widget>[
@@ -155,7 +155,7 @@ class NewStudySessionState extends State<NewStudySession> {
                   newSession.notes = newNotes.toString();
                   newSession.notes = newTitle.toString();
                 },
-                child: Text('Create', style: TextStyle(fontSize: 18, color: Colors.blue))
+                child: Text('Create', style: TextStyle(fontSize: 18, color: Colors.brown[100]))
             )
           ],
         )
