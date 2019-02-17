@@ -28,7 +28,8 @@ class Session {
   final String courses;
 
   Session(
-      {this.title, this.id,
+      {this.title,
+      this.id,
       this.start_time,
       this.end_time,
       this.building,
@@ -61,7 +62,10 @@ Future<List<Session>> fetchPost() async {
     print(sessions[j]);
   }
   */
-  return sessions;
+  if (sessions != null) {
+    return sessions;
+  }
+
   // Parse through sessions (individual JSON Objects)
   // Pass them into .fromJson
   // Get an array of session objects
@@ -111,10 +115,6 @@ class StudySessionsState extends State<StudySessions> {
                   );
                 },
               ),
-              IconButton(
-                  icon:
-                      Icon(const IconData(0xe152, fontFamily: 'MaterialIcons')),
-                  onPressed: null)
             ]),
         body: Container(
             child: FutureBuilder(
@@ -125,18 +125,23 @@ class StudySessionsState extends State<StudySessions> {
   }
 
   Widget _buildGroups(AsyncSnapshot snap) {
-    return new ListView.separated(
-        padding: const EdgeInsets.all(25),
-        separatorBuilder: (context, index) => Divider(
-              height: 30.0,
-              color: Colors.white70,
-            ),
-        itemCount: snap.data.length,
-        itemBuilder: (BuildContext _context, int index) {
-          if (index < snap.data.length) {
-            return _buildRow(snap.data[index]);
-          }
-        });
+    if (snap.data != null) {
+      return new ListView.separated(
+          padding: const EdgeInsets.all(25),
+          separatorBuilder: (context, index) => Divider(
+                height: 30.0,
+                color: Colors.white70,
+              ),
+          itemCount: snap.data.length,
+          itemBuilder: (BuildContext _context, int index) {
+            if (index < snap.data.length) {
+              return _buildRow(snap.data[index]);
+            }
+          });
+    }
+    return new Container(
+      child: Text("Loading..."),
+    );
   }
 
   Widget _buildRow(Session studyGroup) {
@@ -146,8 +151,10 @@ class StudySessionsState extends State<StudySessions> {
     DateTime start = DateTime.parse(studyGroup.start_time);
     DateTime end = DateTime.parse(studyGroup.end_time);
 
-    String startTime = "${start.hour.toString()}:${start.minute.toString().padLeft(2,'0')}";
-    String endTime = "${end.hour.toString()}:${end.minute.toString().padLeft(2,'0')}";
+    String startTime =
+        "${start.hour.toString()}:${start.minute.toString().padLeft(2, '0')}";
+    String endTime =
+        "${end.hour.toString()}:${end.minute.toString().padLeft(2, '0')}";
 
     return new GestureDetector(
         onTap: () {
@@ -179,8 +186,7 @@ class StudySessionsState extends State<StudySessions> {
                     Text(studyGroup.building,
                         style: TextStyle(fontStyle: FontStyle.italic)),
                     SizedBox(height: 10),
-                    Text(' ',
-                        style: TextStyle(color: Colors.yellow[800]))
+                    Text(' ', style: TextStyle(color: Colors.yellow[800]))
                   ],
                 )
               ],
