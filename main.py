@@ -23,11 +23,12 @@ migrate = Migrate(app, db)
 
 
 endorsement = Table(
-    'endorsements',
+    "endorsements",
     db.metadata,
-    Column('receiver_id', Integer, ForeignKey('users.id'), primary_key=True),
-    Column('endorser_id', Integer, ForeignKey('users.id'), primary_key=True)
+    Column("receiver_id", Integer, ForeignKey("users.id"), primary_key=True),
+    Column("endorser_id", Integer, ForeignKey("users.id"), primary_key=True),
 )
+
 
 class User(db.Model):
     __tablename__ = "users"
@@ -40,10 +41,11 @@ class User(db.Model):
     studysession_id = Column(Integer, ForeignKey("studysession.id"))
     studysession = relationship("StudySession", back_populates="host_user")
 
-    given_endorsements = relationship("User",
+    given_endorsements = relationship(
+        "User",
         secondary=endorsement,
-        primaryjoin=(id==endorsement.c.endorser_id),
-        secondaryjoin=(id==endorsement.c.receiver_id)
+        primaryjoin=(id == endorsement.c.endorser_id),
+        secondaryjoin=(id == endorsement.c.receiver_id),
     )
 
     def __init__(self, name: str, email: str, courses: str):
@@ -55,18 +57,6 @@ class User(db.Model):
 
     def __repr__(self):
         return f"User({self.id}, {self.courses}, {self.endorsement_level})"
-
-
-"""
-class Endorsements(db.Model):
-    __tablename__ = 'endorsement'
-    id = Column(Integer, primary_key=True)
-    receiver_id = Column(Integer, ForeignKey('user.id'))
-    endorser_id = Column(Integer, ForeignKey('user.id'))
-
-    receiver = relationship(User, backref=backref('endorsement', cascade='all, delete-orphan'))
-    endorser = relationship(User, backref=backref('user', cascade='all, delete-orphan'))
-"""
 
 
 class StudySession(db.Model):
@@ -130,9 +120,18 @@ def new_user():
 def getsessions():
     courses = request.args.get("courses")
 
-    # do some magic query
-
-    results = StudySession.query.all()
+    if courses is None:
+        results = StudySession.query.all()
+    else:
+        course_list = courses.split(";")
+        result_set = set()
+        for course in course_list:
+            result_set.update(
+                StudySession.query.filter(
+                    StudySession.courses.contains(course)
+                ).all()
+            )
+        results = list(result_set)
 
     simple_results = [
         {
@@ -228,29 +227,58 @@ def newsession():
 
     return json.dumps(ss.id), 201
 
-@app.route('/endorse/', methods=['PUT'])
+
+@app.route("/endorse/", methods=["PUT"])
 def endorse():
-    endorser = request.args.get('endorser')
-    receiver = request.args.get('receiver')
+    endorser = request.args.get("endorser")
+    receiver = request.args.get("receiver")
     u_endorser = User.query.filter_by(name=endorser).first()
     u_receiver = User.query.filter_by(name=receiver).first()
     if u_receiver not in u_endorser.given_endorsements:
         u_endorser.given_endorsements.append(u_receiver)
         u_receiver.endorsement_level += 1
         db.session.commit()
-    return json.dumps(u_endorser.id), 202
+    return json.dumps(u_endorser.id), 204
 
-@app.route('/unendorse/', methods=['PUT'])
+
+@app.route("/unendorse/", methods=["PUT"])
 def unendorse():
-    unendorser = request.args.get('unendorser')
-    receiver = request.args.get('receiver')
+    unendorser = request.args.get("unendorser")
+    receiver = request.args.get("receiver")
     u_unendorser = User.query.filter_by(name=unendorser).first()
     u_receiver = User.query.filter_by(name=receiver).first()
     if u_receiver not in u_unendorser.given_endorsements:
         u_unendorser.given_endorsements.append(u_receiver)
         u_receiver.endorsement_level -= 1
         db.session.commit()
-    return json.dumps(u_unendorser.id), 202
+    return json.dumps(u_unendorser.id), 204
+
+
+@app.route("/modifyuser/", methods=["PUT"])
+def modify():
+    name = request.args.get("name")
+    new_email = request.args.get("newemail")
+    new_courses = request.args.get("newcourses")
+    new_name = request.args.get("newname")
+
+    if name is None:
+        abort(404)
+
+    user = User.query.filter_by(name=name).first()
+
+    if new_email is not None:
+        user.email = new_email
+    if new_courses is not None:
+        user.courses = new_courses
+    if new_name is not None:
+        user.name = new_name
+
+    db.session.commit()
+
+    new_info = {"name": user.name, "email": user.email, "courses": user.courses}
+
+    return json.dumps(new_info), 200
+
 
 @app.errorhandler(500)
 def server_error(e):
