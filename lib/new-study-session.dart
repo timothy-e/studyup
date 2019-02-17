@@ -7,9 +7,9 @@ class NewStudySessionState extends State<NewStudySession> {
 
   final List<String> listOfClasses = <String>['2AA4',
       '2GA3', '2FA3', '2XB3', '2CO3'];
-  final TextStyle _courseFont = const TextStyle(fontSize: 16.0);
-  final TextStyle _instructionFont = const TextStyle(fontSize: 12.0);
-  final TextStyle _infoFont = const TextStyle(fontSize: 14.0);
+  final TextStyle _courseFont = const TextStyle(fontSize: 18.0);
+  final TextStyle _instructionFont = const TextStyle(fontSize: 14.0);
+  final TextStyle _infoFont = const TextStyle(fontSize: 16.0);
   final Set<String> classesToInclude = new Set<String>();
 
   Widget build(BuildContext context){
@@ -21,10 +21,11 @@ class NewStudySessionState extends State<NewStudySession> {
         ),
         body: Column(
           children: <Widget>[
-            Text('Pick the classes you want to have the study session for!', style: _instructionFont),
+            Text('Pick the classes you want to have '
+                ' the study session for!', style: _instructionFont),
             Container(
               margin: const EdgeInsets.all(10.0),
-              height: 100.0,
+              height: 200.0,
               child: _buildClasses()
             ),
             TextField(
@@ -84,6 +85,10 @@ class NewStudySessionState extends State<NewStudySession> {
                         'are studying including location within the building, '
                         'what is being studied/worked on, etc.'
                 )
+            ),
+            RaisedButton(
+                onPressed: null,
+                child: Text('Create', style: TextStyle(fontSize: 18, color: Colors.blue))
             )
           ],
         )

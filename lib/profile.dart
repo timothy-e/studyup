@@ -7,9 +7,9 @@ class ProfileState extends State<Profile> {
   //final Set<String> listOfClasses = new Set<String>();
   final List<String> listOfClasses = <String>['2AA4',
   '2GA3', '2FA3', '2XB3', '2CO3'];
-  final TextStyle _courseFont = const TextStyle(fontSize: 16.0);
-  final TextStyle _instructionFont = const TextStyle(fontSize: 12.0);
-  final TextStyle _infoFont = const TextStyle(fontSize: 14.0);
+  final TextStyle _courseFont = const TextStyle(fontSize: 18.0);
+  final TextStyle _instructionFont = const TextStyle(fontSize: 14.0);
+  final TextStyle _infoFont = const TextStyle(fontSize: 16.0);
   final myController = TextEditingController();
 
   Widget build(BuildContext context) {
@@ -22,11 +22,11 @@ class ProfileState extends State<Profile> {
             Text('Below are listed the classes that you are a part of', style: _instructionFont),
             Container(
                 margin: const EdgeInsets.all(10.0),
-                height: 400.0,
+                height: 300.0,
                 child: _buildClasses()
             ),
             Text('If you would like to add a class, type it below'
-                'then click the add button.', style: _instructionFont),
+                ' then click the add button.', style: _instructionFont),
             Row(
               children: <Widget>[
                 Expanded(
@@ -50,7 +50,7 @@ class ProfileState extends State<Profile> {
               ],
             ),
             Text('Total number of endorsments: 25',
-              style: TextStyle(color: Colors.yellow[800], fontSize: 14.0))
+              style: TextStyle(color: Colors.yellow[800], fontSize: 16.0))
           ],
         )
     );
