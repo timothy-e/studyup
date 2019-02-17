@@ -2,14 +2,9 @@
 
 import 'package:flutter/material.dart';
 
-class Profile extends StatelessWidget{
-  Widget build(BuildContext context){
+class Profile extends StatelessWidget {
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Center(
-          child: Text('User Profile')
-        ),
-      ),
-    );
+        appBar: AppBar(centerTitle: true, title: Text('User Profile')));
   }
 }

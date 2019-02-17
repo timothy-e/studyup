@@ -7,11 +7,10 @@ class StudySessionDetails extends State<SessionDetails> {
   Widget build(BuildContext context){
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-            child: Text('Testing')
-        ),
-      ),
-    );
+        centerTitle: true,
+        title: Text('Testing')
+        )
+      );
   }
 }
 

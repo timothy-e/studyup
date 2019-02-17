@@ -46,7 +46,7 @@ class StudySessionsState extends State<StudySessions> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('StudyUp!'), actions: <Widget>[
+      appBar: AppBar(centerTitle: true, title: Text('StudyUp!'), actions: <Widget>[
         IconButton(
           icon: Icon(const IconData(0xe145, fontFamily: 'MaterialIcons')),
           onPressed: () {
