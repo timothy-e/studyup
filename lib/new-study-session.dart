@@ -7,54 +7,46 @@ import 'dart:io';
 import 'dart:convert';
 
 class Session {
-
-  int id;
   String title;
+  int id;
   String start_time;
   String end_time;
   String building;
   String courses;
   String notes;
+  String host_user;
 
-  Session({this.id, this.title, this.start_time, this.end_time,
-    this.building, this.courses, this.notes});
+  Session(
+      {this.title, this.id,
+        this.start_time,
+        this.end_time,
+        this.building,
+        this.courses, this.notes, this.host_user});
 
   factory Session.fromJson(Map<String, dynamic> json) {
     return Session(
-        id: json['id'],
         title: json['title'],
+        id: json['id'],
         start_time: json['start_time'],
         end_time: json['end_time'],
         building: json['building'],
         courses: json['courses'],
-        notes: json['notes']
-    );
+        notes: json['notes'],
+        host_user: json['host_user']);
   }
 }
 
-Future<List<Session>> fetchPost() async {
-  http.Response resp = await http.get('http://studyup.appspot.com/getsessions');
+Future<List<String>> fetchPost() async {
+  http.Response resp = await http.get('http://studyup.appspot.com/usercourses/?name=Tim');
 
-  // Decoding the Response Body and putting it in an array
-  List l = json.decode(resp.body);
-  List<Session> sessions = new List();
-  l.forEach((i) {
-    sessions.add(new Session.fromJson(i));
-    return i;
-  });
-  for (int j = 0; j < sessions.length; j++) {
-    print (j);
-    print (sessions[j]);
-  }
-
-
-  return sessions;
-
+  String response = json.decode(resp.body);
+  List<String> theCourses = response.split(";");
+  return theCourses;
 }
 
 class NewStudySessionState extends State<NewStudySession> {
 
-  Future<List<Session>> info;
+  Future<List<String>> info;
   @override
   void initState() {
     super.initState();
@@ -84,9 +76,14 @@ class NewStudySessionState extends State<NewStudySession> {
             Text('Pick the classes you want to have '
                 ' the study session for!', style: _instructionFont),
             Container(
-              margin: const EdgeInsets.all(10.0),
-              height: 200.0,
-              child: _buildClasses()
+              child: FutureBuilder(
+                  future: fetchPost(),
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                return _buildClasses(snapshot);
+            }
+              ),
+                margin: const EdgeInsets.all(10.0),
+                height: 200.0,
             ),
             TextField(
               decoration: InputDecoration(
@@ -153,7 +150,8 @@ class NewStudySessionState extends State<NewStudySession> {
                 onPressed: (){
                   newSession.building = newBuilding.toString();
                   newSession.notes = newNotes.toString();
-                  newSession.notes = newTitle.toString();
+                  newSession.title = newTitle.toString();
+                  newSession.host_user = "Tim";
                 },
                 child: Text('Create', style: TextStyle(fontSize: 18, color: Colors.brown[100]))
             )
@@ -162,17 +160,17 @@ class NewStudySessionState extends State<NewStudySession> {
     );
   }
 
-  Widget _buildClasses(){
+  Widget _buildClasses(AsyncSnapshot snapshot){
     return new ListView.separated(
       padding: const EdgeInsets.all(25),
-        itemCount: listOfClasses.length,
+        itemCount: snapshot.data.length,
         separatorBuilder: (context, index) => Divider(
           height: 0.0,
           color: Colors.white70,
         ),
       itemBuilder: (BuildContext _context, int index){
-        if (index < listOfClasses.length){
-          return _buildClass(listOfClasses[index]);
+        if (index < snapshot.data.length){
+          return _buildClass(snapshot.data[index]);
         }
       }
     );
