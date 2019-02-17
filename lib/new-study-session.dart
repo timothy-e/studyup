@@ -35,7 +35,7 @@ class Session {
         host_user: json['host_user']);
   }
 }
-
+/*
 Future<List<String>> fetchPost() async {
   http.Response resp = await http.get('http://studyup.appspot.com/usercourses/?name=Tim');
 
@@ -43,16 +43,16 @@ Future<List<String>> fetchPost() async {
   List<String> theCourses = response.split(";");
   return theCourses;
 }
-
+*/
 class NewStudySessionState extends State<NewStudySession> {
-
+/*
   Future<List<String>> info;
   @override
   void initState() {
     super.initState();
     info = fetchPost();
   }
-
+*/
   final List<String> listOfClasses = <String>['2AA4',
       '2GA3', '2FA3', '2XB3', '2CO3'];
   final TextStyle _courseFont = const TextStyle(fontSize: 18.0);
@@ -76,17 +76,9 @@ class NewStudySessionState extends State<NewStudySession> {
             Text('Pick the classes you want to have '
                 ' the study session for!', style: _instructionFont),
             Container(
-              child: FutureBuilder(
-                  future: fetchPost(),
-                  builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    while (snapshot.hasError) {
-                      //return Text("Loading...");
-                    }
-                    return _buildClasses(snapshot);
-            }
-              ),
                 margin: const EdgeInsets.all(10.0),
                 height: 200.0,
+                child: _buildClasses(listOfClasses)
             ),
             TextField(
               decoration: InputDecoration(
@@ -155,6 +147,13 @@ class NewStudySessionState extends State<NewStudySession> {
                   newSession.notes = newNotes.toString();
                   newSession.title = newTitle.toString();
                   newSession.host_user = "Tim";
+                  newSession.courses = classesToInclude.join(';');
+                  newSession.start_time = "2019-02-17T13:25:43.511Z";
+                  newSession.end_time = "2019-02-17T15:25:43.511Z";
+
+                  http.post('http://studyup.appspot.com/newsession/', body: {"host_user": newSession.host_user,
+                  "building": newSession.building, "notes": newSession.notes, "title": newSession.title,
+                  "courses": newSession.courses, "start_time": newSession.start_time, "end_time": newSession.end_time});
 
                 },
                 child: Text('Create', style: TextStyle(fontSize: 18, color: Colors.brown[100]))
@@ -164,17 +163,17 @@ class NewStudySessionState extends State<NewStudySession> {
     );
   }
 
-  Widget _buildClasses(AsyncSnapshot snapshot){
+  Widget _buildClasses(List<String> listOfClasses){
     return new ListView.separated(
       padding: const EdgeInsets.all(25),
-        itemCount: snapshot.data.length,
+        itemCount: listOfClasses.length,
         separatorBuilder: (context, index) => Divider(
           height: 0.0,
           color: Colors.white70,
         ),
       itemBuilder: (BuildContext _context, int index){
-        if (index < snapshot.data.length){
-          return _buildClass(snapshot.data[index]);
+        if (index < listOfClasses.length){
+          return _buildClass(listOfClasses[index]);
         }
       }
     );
