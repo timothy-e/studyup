@@ -14,12 +14,6 @@ from sqlalchemy.orm import backref, relationship
 
 from flask_migrate import Migrate
 
-from . import db
-from .columns.JSONEncodedObject import JSONEncodedObject
-from .user import User
-
-#
-
 app = Flask(__name__)
 
 # [START gae_flex_mysql_app]
@@ -35,7 +29,7 @@ class User(db.Model):
     __tablename__ = "user"
 
     id = Column(Integer, nullable=False, primary_key=True)
-    courses = Column(String, nullable=False)
+    courses = Column(String(50), nullable=False)
     endorsement_level = Column(Integer, nullable=False)
     studysession_id = Column(Integer, ForeignKey("studysession.id"))
     studysession = relationship("StudySession", back_populates="host_user")
@@ -51,11 +45,21 @@ class User(db.Model):
         return f"User({self.id}, {self.courses}, {self.endorsement_level}"
 
 
+class Endorsements(db.Model):
+    __tablename__ = 'endorsement'
+    id = Column(Integer, primary_key=True)
+    receiver_id = Column(Integer, ForeignKey('user.id'))
+    endorser_id = Column(Integer, ForeignKey('user.id'))
+
+    receiver = relationship(User, backref=backref('endorsement', cascade='all, delete-orphan'))
+    endorser = relationship(User, backref=backref('user', cascade='all, delete-orphan'))
+
+
 class StudySession(db.Model):
     __tablename__ = "studysession"
 
     id = Column(Integer, nullable=False, primary_key=True)
-    courses = Column(String, nullable=False)
+    courses = Column(String(50), nullable=False)
     start_time = Column(DateTime, nullable=False)
     end_time = Column(DateTime, nullable=False)
     host_user = relationship(
@@ -81,12 +85,11 @@ class StudySession(db.Model):
 
 @app.route("/")
 def index():
-    from models.user import User
-    from models.studysession import StudySession
-
-    user = User(courses=["CS241", "CS251"])
+    user = User(courses="CS241;CS251")
+    ss = StudySession(courses="CS241", start_time=datetime.now(), end_time=datetime.now(), host_user=user, users=[user])
 
     db.session.add(user)
+    db.session.add(ss)
     db.session.commit()
 
     users = db.session.query(User).all()
