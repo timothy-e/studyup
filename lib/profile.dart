@@ -16,10 +16,11 @@ class ProfileState extends State<Profile> {
         appBar: AppBar(centerTitle: true, title: Text('User Name')),
         body: Column(
           children: <Widget>[
+            Text('Email: joshua.guinness@gmail.com'),
             Text('Below are listed the classes that you are a part of'),
             Container(
                 margin: const EdgeInsets.all(10.0),
-                height: 100.0,
+                height: 400.0,
                 child: _buildClasses()
             ),
             Text('If you would like to add a class, type it below'
@@ -46,12 +47,7 @@ class ProfileState extends State<Profile> {
                 )
               ],
             ),
-            Expanded(
-              child: FittedBox(
-                fit: BoxFit.contain, // otherwise the logo will be tiny
-                child: const FlutterLogo(),
-              ),
-            ),
+            Text('Total Number of Endorsments are: 25')
           ],
         )
     );
