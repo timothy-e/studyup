@@ -45,7 +45,7 @@ class StudySessionsState extends State<StudySessions> {
   ];
 
   Widget build(BuildContext context) {
-    print('testing 1, 2');
+    print('testing 1, 2, 3');
     return Scaffold(
       appBar: AppBar(
           centerTitle: true,
