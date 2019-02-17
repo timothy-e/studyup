@@ -31,6 +31,18 @@ class NewStudySessionState extends State<NewStudySession> {
                 hintText: 'Please enter a title for your study sessions'
               )
             ),
+            Text('Pick your starting time.'),
+            IconButton(icon: const Icon(Icons.timer),
+                onPressed: (){
+                  DatePicker.showDateTimePicker(context,
+                      showTitleActions: true,
+                      onChanged: (date) {
+                        print('change $date');
+                      }, onConfirm: (date) {
+                        print('confirm $date');
+                      }, currentTime: DateTime.now(), locale: LocaleType.en);
+                }),
+            Text('Pick your ending time.'),
             IconButton(icon: const Icon(Icons.timer),
                 onPressed: (){
                   DatePicker.showDateTimePicker(context,
