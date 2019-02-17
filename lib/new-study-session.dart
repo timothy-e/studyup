@@ -18,12 +18,17 @@ class NewStudySession extends StatelessWidget {
         body: Column(
           children: <Widget>[
             Text('Pick the classes you want to have the study session for!'),
-            _buildClasses()
+            Container(
+              margin: const EdgeInsets.all(10.0),
+              color: const Color(0xFF00FF00),
+              height: 48.0,
+              child: _buildClasses(),
+            )
           ],
         )
     );
   }
-  
+
   Widget _buildClasses(){
     return new ListView.builder(
       padding: const EdgeInsets.all(16.0),
@@ -36,8 +41,8 @@ class NewStudySession extends StatelessWidget {
   }
 
   Widget _buildClass(String classes){
-    return new ListTile(
-      title: new Text(
+    return ListTile(
+      title: Text(
         classes,
         style: _biggerFont,
       ),
