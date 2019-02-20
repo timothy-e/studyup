@@ -7,6 +7,7 @@ pip install the requirements to `lib/`
 
 `./cloud_sql_proxy -instances=studyup:us-central1:studyup-mysql=tcp:3306` to launch the SQL instance.
 
-`python main.py` to launch the webapp.
+`python main.py` to launch the web application.
 
 Visit `localhost:8080` to check it out!
+
