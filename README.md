@@ -41,5 +41,3 @@ pip install the requirements to `lib/`
 `python main.py` to launch the web application.
 
 Visit `localhost:8080` to check it out!
-
-test
